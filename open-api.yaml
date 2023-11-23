@@ -1,0 +1,581 @@
+openapi: 3.0.3
+info:
+  title: Test Drum`N`Code
+  version: 1.0.0
+  contact: {email: 'andrey.tkachenko9999@gmail.com'}
+servers:
+  - url: http://drumncode.loc
+paths:
+  /api/auth/login:
+    post:
+      tags:
+        - auth
+      summary: login
+      description: Login
+      operationId: login
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: 'test@example.com'
+                  required: true
+                password:
+                  type: string
+                  example: '*********'
+                  required: true
+      responses:
+        '200':
+          description: 'Return Bearer Token'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: true
+                message: "User Logged In Successfully"
+                token: "*****************************************"
+
+  /api/auth/register:
+    post:
+      tags:
+        - auth
+      summary: Register
+      description: Register
+      operationId: register
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: 'test@example.com'
+                  required: true
+                password:
+                  type: string
+                  example: '*********'
+                  required: true
+                name:
+                  type: string
+                  example: 'test'
+                  required: true
+      responses:
+        '200':
+          description: 'OK'
+
+  /api/task:
+    get:
+      tags:
+        - tasks
+      summary: index
+      description: Get list of tasks
+      operationId: index
+      security:
+        - bearerAuth:
+            - 'read:users'
+            - 'public'
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: '********'
+        - name: search
+          in: query
+          schema:
+            type: string
+            example: alice
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [ todo, in_progress, done ]
+        - name: priority
+          in: query
+          schema:
+            type: integer
+            example: 3
+        - name: is_self
+          in: query
+          schema:
+            type: boolean
+            example: true
+        - name: order_by[created_at]
+          in: query
+          schema:
+            type: string
+            enum: [ asc, desc ]
+            example: asc
+        - name: order_by[completed_at]
+          in: query
+          schema:
+            type: string
+            enum: [ asc, desc ]
+            example: desc
+        - name: order_by[priority]
+          in: query
+          schema:
+            type: string
+            enum: [ asc, desc ]
+            example: desc
+      responses:
+        '200':
+          description: OK
+          headers:
+            Host:
+              schema:
+                type: string
+                example: drumncode.loc
+            Connection:
+              schema:
+                type: string
+                example: close
+            X-Powered-By:
+              schema:
+                type: number
+                example: PHP/8.1.25
+            Cache-Control:
+              schema:
+                type: string
+                example: no-cache, private
+            Date:
+              schema:
+                type: string
+                example: Wed, 22 Nov 2023 22:32:05 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+                example: '60'
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+                example: '58'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: http://localhost:3000
+            Access-Control-Allow-Credentials:
+              schema:
+                type: boolean
+                example: 'true'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  - id: 3
+                    title: Alice
+                    description: Alice
+                    priority: 3
+                    status: todo
+                    completed_at: null
+                    parent:
+                      id: 2
+                      title: test
+                      description: '2'
+                      priority: 3
+                      author:
+                        id: 1
+                        name: Test User
+                        email: test@example.com
+                      status: todo
+                    author:
+                      id: 1
+                      name: Test User
+                      email: test@example.com
+                    children:
+                      - id: 4
+                        title: Alice2
+                        description: Alice
+                        priority: 3
+                        status: todo
+                        completed_at: null
+                        parent:
+                          id: 3
+                          title: Alice
+                          description: Alice
+                          priority: 3
+                          author:
+                            id: 1
+                            name: Test User
+                            email: test@example.com
+                          status: todo
+                        author:
+                          id: 1
+                          name: Test User
+                          email: test@example.com
+                        children:
+                          - id: 6
+                            title: Marc
+                            description: '222'
+                            priority: 3
+                            status: done
+                            completed_at: null
+                            parent:
+                              id: 4
+                              title: Alice2
+                              description: Alice
+                              priority: 3
+                              author:
+                                id: 1
+                                name: Test User
+                                email: test@example.com
+                              status: todo
+                            author:
+                              id: 1
+                              name: Test User
+                              email: test@example.com
+                            children:
+                              - id: 8
+                                title: test3
+                                description: '222'
+                                priority: 3
+                                status: done
+                                completed_at: null
+                                parent:
+                                  id: 6
+                                  title: Marc
+                                  description: '222'
+                                  priority: 3
+                                  author:
+                                    id: 1
+                                    name: Test User
+                                    email: test@example.com
+                                  status: done
+                                author:
+                                  id: 1
+                                  name: Test User
+                                  email: test@example.com
+                                children: [ ]
+                  - id: 4
+                    title: Alice2
+                    description: Alice
+                    priority: 3
+                    status: todo
+                    completed_at: null
+                    parent:
+                      id: 3
+                      title: Alice
+                      description: Alice
+                      priority: 3
+                      author:
+                        id: 1
+                        name: Test User
+                        email: test@example.com
+                      status: todo
+                    author:
+                      id: 1
+                      name: Test User
+                      email: test@example.com
+                    children:
+                      - id: 6
+                        title: Marc
+                        description: '222'
+                        priority: 3
+                        status: done
+                        completed_at: null
+                        parent:
+                          id: 4
+                          title: Alice2
+                          description: Alice
+                          priority: 3
+                          author:
+                            id: 1
+                            name: Test User
+                            email: test@example.com
+                          status: todo
+                        author:
+                          id: 1
+                          name: Test User
+                          email: test@example.com
+                        children:
+                          - id: 8
+                            title: test3
+                            description: '222'
+                            priority: 3
+                            status: done
+                            completed_at: null
+                            parent:
+                              id: 6
+                              title: Marc
+                              description: '222'
+                              priority: 3
+                              author:
+                                id: 1
+                                name: Test User
+                                email: test@example.com
+                              status: done
+                            author:
+                              id: 1
+                              name: Test User
+                              email: test@example.com
+                            children: [ ]
+
+    post:
+      tags:
+        - tasks
+      summary: store
+      description: Store new task
+      operationId: store
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: '********'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  example: ''
+                parent_id:
+                  type: integer
+                  example: ''
+                priority:
+                  type: integer
+                  enum: [ 1, 2, 3, 4, 5 ]
+                  example: ''
+                title:
+                  type: string
+                  example: ''
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  id: 2
+                  title: 'Lorem Ipsum '
+                  description: >+
+                    Integer tempor vitae odio porta facilisis. Suspendisse
+                    gravida varius dolor, sit amet mollis neque egestas in.
+                    Suspendisse in ligula lobortis, pretium eros eget, consequat
+                    mi. Donec posuere nisl neque, a accumsan ex porttitor in.
+                    Aenean sed varius lectus. Fusce eget lectus quis turpis
+                    vulputate maximus. Nam sit amet neque nunc. Praesent id
+                    interdum elit. Phasellus at hendrerit ante. Sed sed ex et
+                    ligula laoreet tincidunt. Phasellus rutrum fermentum odio.
+                    Aenean pharetra tempor dictum. Quisque ultricies, mi in
+                    tempus luctus, dolor odio congue ex, a fermentum est quam et
+                    neque.
+                  priority: 3
+                  status: todo
+                  completed_at: null
+                  parent:
+                    id: 1
+                    title: Lorem Ipsum
+                    description: >-
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                      Integer sapien neque, porttitor a dui in, faucibus
+                      imperdiet risus. Curabitur quis orci ornare, sagittis
+                      mauris vitae, elementum tellus. In finibus ultrices lectus
+                      vitae porta. Nulla malesuada enim sed rutrum sollicitudin.
+                      Praesent feugiat urna sit amet velit porta faucibus. Ut
+                      rhoncus nisl eros, id maximus sapien placerat a. Nulla
+                      gravida magna orci, ac convallis odio ornare a. Mauris
+                      hendrerit, arcu non placerat eleifend, risus ante tempus
+                      dolor, et commodo felis tellus vel mauris. Nullam
+                      tincidunt accumsan nulla a elementum. Donec posuere ante
+                      ex, ut aliquet dolor pretium vel. Suspendisse nec interdum
+                      lectus. Donec malesuada orci non faucibus mollis. Proin
+                      vel faucibus ipsum. Donec et lectus sit amet nunc faucibus
+                      ullamcorper.
+                    priority: 1
+                    author:
+                      id: 1
+                      name: Test User
+                      email: test@example.com
+                    status: todo
+                  author:
+                    id: 1
+                    name: Test User
+                    email: test@example.com
+                  children:
+                    - id: 3
+                      title: 'Lorem Ipsum '
+                      description: >-
+                        Aliquam erat volutpat. Aenean quam ante, ultrices quis
+                        dolor at, lobortis ultrices urna. Aliquam ut rhoncus
+                        dolor. Nullam egestas eget urna eget viverra. Nullam sed
+                        felis quam. Phasellus elementum a lacus vel rutrum.
+                        Quisque non enim sagittis purus commodo rhoncus. Aliquam
+                        dignissim nunc et libero efficitur finibus. Aenean
+                        dignissim, eros nec sodales fermentum, ligula lectus
+                        ullamcorper nisi, fringilla convallis mauris sem ut
+                        velit. In a ullamcorper sapien. Vivamus rhoncus
+                        vestibulum aliquam. Morbi gravida sem non augue dictum
+                        ultrices. Vestibulum nec tempor neque. Quisque viverra
+                        magna at eros pharetra, nec molestie mauris malesuada.
+                        Duis eget mollis urna. Vivamus suscipit consectetur
+                        fermentum.
+                      priority: 3
+                      status: todo
+                      completed_at: null
+                      parent:
+                        id: 2
+                        title: 'Lorem Ipsum '
+                        description: >+
+                          Integer tempor vitae odio porta facilisis. Suspendisse
+                          gravida varius dolor, sit amet mollis neque egestas
+                          in. Suspendisse in ligula lobortis, pretium eros eget,
+                          consequat mi. Donec posuere nisl neque, a accumsan ex
+                          porttitor in. Aenean sed varius lectus. Fusce eget
+                          lectus quis turpis vulputate maximus. Nam sit amet
+                          neque nunc. Praesent id interdum elit. Phasellus at
+                          hendrerit ante. Sed sed ex et ligula laoreet
+                          tincidunt. Phasellus rutrum fermentum odio. Aenean
+                          pharetra tempor dictum. Quisque ultricies, mi in
+                          tempus luctus, dolor odio congue ex, a fermentum est
+                          quam et neque.
+                        priority: 3
+                        author:
+                          id: 1
+                          name: Test User
+                          email: test@example.com
+                        status: todo
+                      author:
+                        id: 1
+                        name: Test User
+                        email: test@example.com
+                      children: [ ]
+  /api/task/{task_id}:
+    get:
+      tags:
+        - tasks
+      summary: show
+      description: Get single task
+      operationId: show
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: '********'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+              example: Ok
+    put:
+      tags:
+        - tasks
+      summary: update
+      description: Update existing task
+      operationId: update
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: '********'
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  example: ''
+                priority:
+                  type: integer
+                  enum: [ 1, 2, 3, 4, 5 ]
+                  example: 1
+                status:
+                  type: string
+                  example: 'todo'
+                  enum: [todo, in_progress, done]
+                title:
+                  type: string
+                  example: 'Title'
+            examples:
+              update:
+                value:
+                  title: 'Title'
+                  description: 'Lorem Ipsum'
+                  priority: '3'
+                  status: 'todo'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: object
+              example: Ok
+    delete:
+      tags:
+        - tasks
+      summary: delete
+      description: Delete task
+      operationId: delete
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: '********'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: object
+              example: Ok
+    parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+tags:
+  - name: auth
+    description: Auth
+  - name: tasks
+    description: Tasks
